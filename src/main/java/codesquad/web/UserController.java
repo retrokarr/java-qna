@@ -64,14 +64,14 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String tryLogin(HttpSession session, User user) {
+    public String tryLogin(HttpSession session, String userId, String password) {
         try {
-            User loginUser = userService.login(user.getUserId(), user.getPassword());
+            User loginUser = userService.login(userId, password);
             HttpSessionUtils.setUserInSession(session, loginUser);
         } catch (UnAuthenticationException e) {
             log.debug("Password not match or user not found");
             return "/user/login_failed";
         }
-        return "redirect:/home";
+        return "redirect:/";
     }
 }

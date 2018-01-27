@@ -105,19 +105,19 @@ public class UserAcceptanceTest extends AcceptanceTest {
     public void loginTest() throws Exception {
         HttpEntity<MultiValueMap<String, Object>> request;
         request = HtmlFormDataBuilder.urlEncodedFrom()
-                .addParameter("userId", "sanjini")
-                .addParameter("password", "password")
+                .addParameter("userId", "sanjigi")
+                .addParameter("password", "test")
                 .build();
 
         ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
     }
 
     @Test
     public void loginFailTest() throws Exception {
         HttpEntity<MultiValueMap<String, Object>> request;
         request = HtmlFormDataBuilder.urlEncodedFrom()
-                .addParameter("userId", "sanjini")
+                .addParameter("userId", "sanjigi")
                 .addParameter("password", "test2")
                 .build();
 
