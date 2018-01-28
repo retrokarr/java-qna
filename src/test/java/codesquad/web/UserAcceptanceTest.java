@@ -20,6 +20,8 @@ import codesquad.domain.User;
 import codesquad.domain.UserRepository;
 import support.test.AcceptanceTest;
 
+import javax.xml.ws.Response;
+
 public class UserAcceptanceTest extends AcceptanceTest {
     private static final Logger log = LoggerFactory.getLogger(UserAcceptanceTest.class);
 
@@ -124,5 +126,20 @@ public class UserAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertTrue(response.getBody().contains("아이디 또는 비밀번호가 틀립니다. 다시 로그인 해주세요."));
+    }
+
+    @Test
+    public void logoutTest() {
+        HttpEntity<MultiValueMap<String, Object>> request;
+        request = HtmlFormDataBuilder.urlEncodedFrom()
+                .addParameter("userId", "sanjigi")
+                .addParameter("password", "test")
+                .build();
+
+        ResponseEntity<String> response = template().postForEntity("/users/login", request, String.class);
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+
+        ResponseEntity<String> logoutResponse = template().getForEntity("/users/logout", String.class);
+        assertTrue(logoutResponse.getBody().contains("로그인"));
     }
 }
