@@ -131,8 +131,7 @@ public class UserAcceptanceTest extends AcceptanceTest {
         ResponseEntity<String> response = basicAuthTemplate().withBasicAuth("sanjigi", "test")
                 .getForEntity("/users/logout", String.class);
 
-        System.out.println(response.getBody());
-        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
-        //assertTrue(response.getBody().contains("로그인"));
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertTrue(response.getBody().contains("로그인"));
     }
 }

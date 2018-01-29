@@ -4,6 +4,7 @@ import static codesquad.domain.UserTest.newUser;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
@@ -14,6 +15,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -76,7 +79,29 @@ public class QuestionServiceTest {
         Question question = newQuestion(origin);
 
         when(questionRepository.findOne(question.getId())).thenReturn(question);
-        
+
         qnaService.update(newUser("another"), 0, question);
+    }
+
+    @Test
+    public void deleteTest_by_owner() throws Exception {
+        User origin = newUser("sanjigi");
+        Question question = newQuestion(origin);
+
+        when(questionRepository.findOne(question.getId())).thenReturn(question);
+
+        qnaService.deleteQuestion(origin, question.getId());
+
+        verify(questionRepository, times(1)).delete(question.getId());
+    }
+
+    @Test(expected = CannotDeleteException.class)
+    public void deleteTest_by_other() throws Exception {
+        User origin = newUser("sanjigi");
+        Question question = newQuestion(origin);
+
+        when(questionRepository.findOne(question.getId())).thenReturn(question);
+
+        qnaService.deleteQuestion(newUser("another"), question.getId());
     }
 }

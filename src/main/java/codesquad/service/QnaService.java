@@ -53,7 +53,12 @@ public class QnaService {
 
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        // TODO 삭제 기능 구현
+        Question question = questionRepository.findOne(questionId);
+
+        if(!question.isOwner(loginUser))
+            throw new CannotDeleteException("Not owner");
+
+        questionRepository.delete(questionId);
     }
 
     public Iterable<Question> findAll() {

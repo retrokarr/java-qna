@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static testhelper.HtmlFormDataBuilder.urlEncodedForm;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,11 @@ import support.test.AcceptanceTest;
 
 public class QuestionAcceptanceTest extends AcceptanceTest {
     private static final Logger log = LoggerFactory.getLogger(QuestionAcceptanceTest.class);
+
+    @Before
+    public void init() {
+        
+    }
 
     @Test
     public void accessFormWithoutLogin() throws Exception {
@@ -115,5 +121,33 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .postForEntity("/questions/2/update", request, String.class);
 
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+    }
+
+    @Test
+    public void deleteQuestionTest_with_owner() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .postForEntity("/questions/1", urlEncodedForm().build(), String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+
+        response = basicAuthTemplate()
+                .getForEntity("/questions/1", String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertFalse(response.getBody().contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"));
+    }
+
+    @Test
+    public void deleteQuestionTest_with_other_user() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .postForEntity("/questions/2", urlEncodedForm().build(), String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
+
+        response = basicAuthTemplate()
+                .getForEntity("/questions/1", String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertTrue(response.getBody().contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"));
     }
 }

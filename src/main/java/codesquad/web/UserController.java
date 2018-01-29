@@ -75,6 +75,6 @@ public class UserController {
     public String tryLogout(HttpSession session) {
         HttpSessionUtils.logout(session);
 
-        return "redirect:/";
+        return "home";
     }
 }

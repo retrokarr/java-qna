@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
@@ -85,6 +86,17 @@ public class QuestionController {
 
         model.addAttribute("question", question);
         return "/qna/show";
+    }
+
+    @PostMapping("/{postNo}")
+    public String deleteQuestion(@LoginUser User loginUser, @PathVariable long postNo) {
+        try {
+            qnaService.deleteQuestion(loginUser, postNo);
+        } catch (CannotDeleteException e) {
+            return "redirect:/";
+        }
+
+        return "redirect:/";
     }
 
     private boolean isInvalidInput(QuestionDto question) {
