@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;
 import static testhelper.HtmlFormDataBuilder.urlEncodedForm;
 
-import codesquad.domain.User;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +74,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
     }
 
     @Test
-    public void accessUpdateForm_with_outher_user() throws Exception {
+    public void accessUpdateForm_with_other_user() throws Exception {
         ResponseEntity<String> response = basicAuthTemplate()
                 .getForEntity("/questions/2/form", String.class);
 
@@ -89,5 +88,32 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertTrue(response.getBody().contains("수정하기"));
+    }
+
+    @Test
+    public void updateQuestionTest_with_writer() throws Exception {
+        HttpEntity<MultiValueMap<String, Object>> request;
+        request = urlEncodedForm().addParameter("title", "title")
+                .addParameter("contents", "수정되었다")
+                .build();
+
+        ResponseEntity<String> response = basicAuthTemplate()
+                .postForEntity("/questions/1/update", request, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertTrue(response.getBody().contains("수정되었다"));
+    }
+
+    @Test
+    public void updateQuestionTest_with_other_user() throws Exception {
+        HttpEntity<MultiValueMap<String, Object>> request;
+        request = urlEncodedForm().addParameter("title", "title")
+                .addParameter("contents", "수정되었다")
+                .build();
+
+        ResponseEntity<String> response = basicAuthTemplate()
+                .postForEntity("/questions/2/update", request, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
     }
 }

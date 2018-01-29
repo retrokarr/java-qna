@@ -1,5 +1,6 @@
 package codesquad.web;
 
+import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDto;
@@ -61,11 +62,29 @@ public class QuestionController {
     public String getPost(@LoginUser User loginUser, @PathVariable long postNo, Model model) {
         Question question = qnaService.findById(postNo);
 
-        if(!question.getWriter().equals(loginUser))
+        if(!question.isOwner(loginUser))
             return "redirect:/";
 
-        model.addAttribute("question", question);
+        model.addAttribute("question", question.toQuestionDto());
         return "/qna/updateForm";
+    }
+
+    @PostMapping("/{postNo}/update")
+    public String updateQuestion(@LoginUser User loginUser, @PathVariable long postNo,
+                                 String title, String contents, Model model) {
+        QuestionDto questionDto = new QuestionDto(title, contents);
+        if(!isInvalidInput(questionDto))
+            return "redirect:/";
+
+        Question question = null;
+        try {
+            question = qnaService.update(loginUser, postNo, questionDto.toQuestion());
+        } catch(UnAuthorizedException | NullPointerException e) {
+            return "redirect:/";
+        }
+
+        model.addAttribute("question", question);
+        return "/qna/show";
     }
 
     private boolean isInvalidInput(QuestionDto question) {
