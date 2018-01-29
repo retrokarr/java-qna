@@ -46,7 +46,7 @@ public class QuestionController {
         return "redirect:" + question.generateUrl();
     }
 
-    @GetMapping("{postNo}")
+    @GetMapping("/{postNo}")
     public String getPost(@PathVariable long postNo, Model model) {
         Question question = qnaService.findById(postNo);
 
@@ -55,6 +55,17 @@ public class QuestionController {
 
         model.addAttribute("question", question);
         return "/qna/show";
+    }
+
+    @GetMapping("/{postNo}/form")
+    public String getPost(@LoginUser User loginUser, @PathVariable long postNo, Model model) {
+        Question question = qnaService.findById(postNo);
+
+        if(!question.getWriter().equals(loginUser))
+            return "redirect:/";
+
+        model.addAttribute("question", question);
+        return "/qna/updateForm";
     }
 
     private boolean isInvalidInput(QuestionDto question) {

@@ -1,9 +1,7 @@
 package codesquad.web;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static testhelper.HtmlFormDataBuilder.urlEncodedForm;
 
 import codesquad.domain.User;
@@ -74,5 +72,22 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .getForEntity("/questions/100", String.class);
 
         assertTrue(response.getBody().contains("질문하기"));
+    }
+
+    @Test
+    public void accessUpdateForm_with_outher_user() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .getForEntity("/questions/2/form", String.class);
+
+        assertFalse(response.getBody().contains("수정하기"));
+    }
+
+    @Test
+    public void accessUpdateForm_with_writer() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .getForEntity("/questions/1/form", String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertTrue(response.getBody().contains("수정하기"));
     }
 }
