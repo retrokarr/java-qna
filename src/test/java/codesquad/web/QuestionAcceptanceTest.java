@@ -20,7 +20,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Before
     public void init() {
-        
+
     }
 
     @Test
@@ -148,6 +148,15 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .getForEntity("/questions/1", String.class);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertTrue(response.getBody().contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"));
+    }
+
+    @Test
+    public void questionListTest() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .getForEntity("/", String.class);
+
+        assertTrue(response.getBody().contains("runtime 에 reflect 발동 주체 객체가 뭔지 알 방법이 있을까요?"));
         assertTrue(response.getBody().contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"));
     }
 }
