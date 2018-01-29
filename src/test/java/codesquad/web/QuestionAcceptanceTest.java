@@ -59,4 +59,20 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
         assertTrue(response.getHeaders().getLocation().getPath().startsWith("/qna/form"));
     }
+
+    @Test
+    public void getPostTest() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .getForEntity("/questions/1", String.class);
+
+        assertTrue(response.getBody().contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"));
+    }
+
+    @Test
+    public void getPostTest_invalid_postNo() throws Exception {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .getForEntity("/questions/100", String.class);
+
+        assertTrue(response.getBody().contains("질문하기"));
+    }
 }

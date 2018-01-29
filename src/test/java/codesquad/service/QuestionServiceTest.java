@@ -33,4 +33,16 @@ public class QuestionServiceTest {
 
         assertThat(createdQuestion, is(question));
     }
+
+    @Test
+    public void findOneTest() {
+        User user = new User("sanjigi", "password", "name", "javajigi@slipp.net");
+        Question question = new Question("title", "contents");
+        question.writeBy(user);
+
+        when(questionRepository.findOne(question.getId())).thenReturn(question);
+        Question foundQuestion = qnaService.findById(question.getId());
+
+        assertThat(foundQuestion, is(question));
+    }
 }
