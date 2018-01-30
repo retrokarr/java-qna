@@ -87,12 +87,12 @@ public class QuestionServiceTest {
     public void deleteTest_by_owner() throws Exception {
         User origin = newUser("sanjigi");
         Question question = newQuestion(origin);
+        assertFalse(question.isDeleted());
 
         when(questionRepository.findOne(question.getId())).thenReturn(question);
-
         qnaService.deleteQuestion(origin, question.getId());
 
-        verify(questionRepository, times(1)).delete(question.getId());
+        assertTrue(question.isDeleted());
     }
 
     @Test(expected = CannotDeleteException.class)

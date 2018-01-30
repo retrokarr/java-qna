@@ -129,7 +129,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
 
         response = basicAuthTemplate()
-                .getForEntity("/questions/1", String.class);
+                .getForEntity("/", String.class);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertFalse(response.getBody().contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"));
@@ -142,7 +142,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
 
         response = basicAuthTemplate()
-                .getForEntity("/questions/2", String.class);
+                .getForEntity("/", String.class);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertTrue(response.getBody().contains("runtime 에 reflect 발동 주체 객체가 뭔지 알 방법이 있을까요?"));
