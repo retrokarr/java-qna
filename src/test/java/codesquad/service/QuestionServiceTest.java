@@ -65,7 +65,7 @@ public class QuestionServiceTest {
         User origin = newUser("sanjigi");
         Question question = newQuestion(origin);
         Question updatedQuestion = newQuestion(origin);
-        updatedQuestion.update(newQuestion("updated", "updated"));
+        updatedQuestion.update(origin, newQuestion("updated", "updated"));
 
         when(questionRepository.findOne(question.getId())).thenReturn(question);
         when(questionRepository.save(question)).thenReturn(updatedQuestion);

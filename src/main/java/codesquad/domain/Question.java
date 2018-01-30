@@ -14,6 +14,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.validation.constraints.Size;
 
+import codesquad.UnAuthorizedException;
 import org.hibernate.annotations.Where;
 
 import codesquad.dto.QuestionDto;
@@ -78,7 +79,10 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return deleted;
     }
 
-    public void update(Question updatedQuestion) {
+    public void update(User loginUser, Question updatedQuestion) {
+        if(!this.isOwner(loginUser))
+            throw new UnAuthorizedException();
+
         this.title = updatedQuestion.title;
         this.contents = updatedQuestion.contents;
     }

@@ -44,10 +44,8 @@ public class QnaService {
     public Question update(User loginUser, long id, Question updatedQuestion) {
         Question originalQuestion = questionRepository.findOne(id);
 
-        if(!originalQuestion.isOwner(loginUser))
-            throw new UnAuthorizedException();
+        originalQuestion.update(loginUser, updatedQuestion);
 
-        originalQuestion.update(updatedQuestion);
         return questionRepository.save(originalQuestion);
     }
 
