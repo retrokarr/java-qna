@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.MultiValueMap;
@@ -125,8 +126,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void deleteQuestionTest_with_owner() throws Exception {
-        ResponseEntity<String> response = basicAuthTemplate()
-                .postForEntity("/questions/1", urlEncodedForm().build(), String.class);
+        ResponseEntity<String> response = delete("/questions/1");
 
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
 
@@ -139,16 +139,15 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void deleteQuestionTest_with_other_user() throws Exception {
-        ResponseEntity<String> response = basicAuthTemplate()
-                .postForEntity("/questions/2", urlEncodedForm().build(), String.class);
+        ResponseEntity<String> response = delete("/questions/2");
 
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
 
         response = basicAuthTemplate()
-                .getForEntity("/questions/1", String.class);
+                .getForEntity("/questions/2", String.class);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
-        assertTrue(response.getBody().contains("국내에서 Ruby on Rails와 Play가 활성화되기 힘든 이유는 뭘까?"));
+        assertTrue(response.getBody().contains("runtime 에 reflect 발동 주체 객체가 뭔지 알 방법이 있을까요?"));
     }
 
     @Test
