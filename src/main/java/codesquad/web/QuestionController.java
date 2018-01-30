@@ -67,7 +67,7 @@ public class QuestionController {
         return "/qna/updateForm";
     }
 
-    @PostMapping("/{questionNo}/update")
+    @PutMapping("/{questionNo}")
     public String updateQuestion(@LoginUser User loginUser, @PathVariable long questionNo,
                                  QuestionDto questionDto, Model model) {
         if(!isInvalidInput(questionDto))

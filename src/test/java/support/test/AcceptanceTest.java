@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -13,6 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
+import org.springframework.util.MultiValueMap;
 
 import static testhelper.HtmlFormDataBuilder.urlEncodedForm;
 
@@ -43,6 +45,11 @@ public abstract class AcceptanceTest {
     public ResponseEntity<String> delete(String url) {
         return basicAuthTemplate()
                 .exchange(url, HttpMethod.DELETE, urlEncodedForm().build(), String.class);
+    }
+
+    public ResponseEntity<String> put(String url, HttpEntity<MultiValueMap<String, Object>> request) {
+        return basicAuthTemplate()
+                .exchange(url, HttpMethod.PUT, request, String.class);
     }
     
     protected User defaultUser() {

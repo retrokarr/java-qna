@@ -104,8 +104,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .addParameter("contents", "수정되었다")
                 .build();
 
-        ResponseEntity<String> response = basicAuthTemplate()
-                .postForEntity("/questions/1/update", request, String.class);
+        ResponseEntity<String> response = put("/questions/1", request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
         assertTrue(response.getBody().contains("수정되었다"));
@@ -118,8 +117,7 @@ public class QuestionAcceptanceTest extends AcceptanceTest {
                 .addParameter("contents", "수정되었다")
                 .build();
 
-        ResponseEntity<String> response = basicAuthTemplate()
-                .postForEntity("/questions/2/update", request, String.class);
+        ResponseEntity<String> response = put("/questions/2", request);
 
         assertThat(response.getStatusCode(), is(HttpStatus.FOUND));
     }
