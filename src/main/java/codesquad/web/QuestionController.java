@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.ConstraintViolation;
@@ -38,7 +35,7 @@ public class QuestionController {
     }
 
     @PostMapping("")
-    public String form(@LoginUser User loginUser, String title, String contents) {
+    public String createQuestion(@LoginUser User loginUser, String title, String contents) {
         if(!isInvalidInput(new QuestionDto(title, contents)))
             return "redirect:/qna/form";
 
@@ -48,9 +45,9 @@ public class QuestionController {
         return "redirect:" + question.generateUrl();
     }
 
-    @GetMapping("/{postNo}")
-    public String getPost(@PathVariable long postNo, Model model) {
-        Question question = qnaService.findById(postNo);
+    @GetMapping("/{questionNo}")
+    public String showQuestion(@PathVariable long questionNo, Model model) {
+        Question question = qnaService.findById(questionNo);
 
         if(question == null)
             return "redirect:/";
@@ -59,9 +56,9 @@ public class QuestionController {
         return "/qna/show";
     }
 
-    @GetMapping("/{postNo}/form")
-    public String getPost(@LoginUser User loginUser, @PathVariable long postNo, Model model) {
-        Question question = qnaService.findById(postNo);
+    @GetMapping("/{questionNo}/form")
+    public String showUpdateForm(@LoginUser User loginUser, @PathVariable long questionNo, Model model) {
+        Question question = qnaService.findById(questionNo);
 
         if(!question.isOwner(loginUser))
             return "redirect:/";
@@ -70,16 +67,15 @@ public class QuestionController {
         return "/qna/updateForm";
     }
 
-    @PostMapping("/{postNo}/update")
-    public String updateQuestion(@LoginUser User loginUser, @PathVariable long postNo,
-                                 String title, String contents, Model model) {
-        QuestionDto questionDto = new QuestionDto(title, contents);
+    @PostMapping("/{questionNo}/update")
+    public String updateQuestion(@LoginUser User loginUser, @PathVariable long questionNo,
+                                 QuestionDto questionDto, Model model) {
         if(!isInvalidInput(questionDto))
             return "redirect:/";
 
         Question question = null;
         try {
-            question = qnaService.update(loginUser, postNo, questionDto.toQuestion());
+            question = qnaService.update(loginUser, questionNo, questionDto.toQuestion());
         } catch(UnAuthorizedException | NullPointerException e) {
             return "redirect:/";
         }
@@ -88,10 +84,10 @@ public class QuestionController {
         return "/qna/show";
     }
 
-    @PostMapping("/{postNo}")
-    public String deleteQuestion(@LoginUser User loginUser, @PathVariable long postNo) {
+    @DeleteMapping("/{questionNo}")
+    public String deleteQuestion(@LoginUser User loginUser, @PathVariable long questionNo) {
         try {
-            qnaService.deleteQuestion(loginUser, postNo);
+            qnaService.deleteQuestion(loginUser, questionNo);
         } catch (CannotDeleteException e) {
             return "redirect:/";
         }
