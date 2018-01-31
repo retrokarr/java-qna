@@ -29,12 +29,6 @@ public class ApiAnswerController {
         return ApiResponse.CREATED(savedAnswer.generateApiUrl());
     }
 
-/*    @GetMapping("")
-    public AnswersDto showAll(@PathVariable long questionNo) {
-        Answers answers = qnaService.findById(questionNo);
-        return answers.toAnswersDto();
-    }*/
-
     @GetMapping("/{answerNo}")
     public AnswerDto show(@PathVariable long answerNo) {
         Answer answer = qnaService.findAnswerById(answerNo);
