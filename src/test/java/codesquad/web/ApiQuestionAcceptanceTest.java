@@ -16,14 +16,10 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     public static final String URL_BASE = "/api/questions";
     public static final QuestionDto NEW_QUESTION = new QuestionDto(3, "question", "contents");
     public static final QuestionDto UPDATED_QUESTION = new QuestionDto(1, "updated", "updated");
-    public static final int QUESTION_IDX = 1;
 
     @Test
     public void create() throws Exception {
-        ResponseEntity<String> response = basicAuthTemplate().postForEntity(URL_BASE, NEW_QUESTION, String.class);
-
-        assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
-        String location = response.getHeaders().getLocation().getPath();
+        String location = create(URL_BASE, NEW_QUESTION);
 
         QuestionDto dbQuestion = template().getForObject(location, QuestionDto.class);
         assertThat(dbQuestion, is(NEW_QUESTION));
@@ -31,30 +27,33 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        ResponseEntity<String> response = put("/api/questions/1", UPDATED_QUESTION);
+        ResponseEntity<String> response = put(targetUrl(1L), UPDATED_QUESTION);
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
-        QuestionDto dbQuestion = template().getForObject("/api/questions/1", QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject(targetUrl(1L), QuestionDto.class);
         assertThat(dbQuestion, is(UPDATED_QUESTION));
     }
 
     @Test
     public void update_by_not_owner() throws Exception {
-        ResponseEntity<String> response = put("/api/questions/2", UPDATED_QUESTION);
+        ResponseEntity<String> response = put(targetUrl(2L), UPDATED_QUESTION);
         assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
 
-        QuestionDto dbQuestion = template().getForObject("/api/questions/2", QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject(targetUrl(2L), QuestionDto.class);
         assertThat(dbQuestion, not(UPDATED_QUESTION));
     }
 
     @Test
     public void delete() throws Exception {
-        basicAuthTemplate().delete("/api/questions/1");
+        basicAuthTemplate().delete(targetUrl(1L));
+        ResponseEntity<String> resposne = delete(targetUrl(1L));
+        assertThat(resposne.getStatusCode(), is(HttpStatus.OK));
 
-        QuestionDto dbQuestion = template().getForObject("/api/questions/1", QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject(targetUrl(1L), QuestionDto.class);
         assertThat(dbQuestion, is(nullValue()));
+    }
+
+    private String targetUrl(long id) {
+        return URL_BASE + "/" + id;
     }
 }

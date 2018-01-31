@@ -12,6 +12,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.*;
 import static testhelper.HtmlFormDataBuilder.toJson;
 import static testhelper.HtmlFormDataBuilder.urlEncodedForm;
 
@@ -52,6 +54,15 @@ public abstract class AcceptanceTest {
     public ResponseEntity<String> put(String url, Object bodyPayload) {
         return basicAuthTemplate()
                 .exchange(url, HttpMethod.PUT, toJson(bodyPayload), String.class);
+    }
+
+    public String create(String url, Object bodyPayload) {
+        ResponseEntity<String> response = basicAuthTemplate()
+                .postForEntity(url, bodyPayload, String.class);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.CREATED));
+
+        return response.getHeaders().getLocation().getPath();
     }
 
     protected User defaultUser() {
