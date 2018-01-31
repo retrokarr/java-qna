@@ -72,11 +72,25 @@ public class QnaService {
     }
 
     public Answer addAnswer(User loginUser, long questionId, String contents) {
-        return null;
+        Question question = findById(questionId);
+        Answer answer = new Answer(loginUser, contents);
+
+        question.addAnswer(answer);
+
+        return answerRepository.save(answer);
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
         // TODO 답변 삭제 기능 구현 
         return null;
+    }
+
+    public Answer findAnswerById(long answerNo) {
+        Answer answer = answerRepository.findOne(answerNo);
+
+        if(answer == null)
+            throw new EntityNotFoundException("Answer not exists");
+
+        return answer;
     }
 }

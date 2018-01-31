@@ -15,20 +15,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QuestionServiceTest {
-    private static Question newQuestion(User origin) {
+    public static Question newQuestion(User origin) {
         Question question = new Question("title", "contents");
         question.writeBy(origin);
 
         return question;
     }
 
-    private static Question newQuestion(String title, String contents) {
+    public static Question newQuestion(String title, String contents) {
         return new Question(title, contents);
     }
 

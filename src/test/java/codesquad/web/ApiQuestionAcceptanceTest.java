@@ -46,8 +46,8 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
     @Test
     public void delete() throws Exception {
         basicAuthTemplate().delete(targetUrl(1L));
-        ResponseEntity<String> resposne = delete(targetUrl(1L));
-        assertThat(resposne.getStatusCode(), is(HttpStatus.OK));
+        ResponseEntity<String> response = delete(targetUrl(1L));
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
         QuestionDto dbQuestion = template().getForObject(targetUrl(1L), QuestionDto.class);
         assertThat(dbQuestion, is(nullValue()));

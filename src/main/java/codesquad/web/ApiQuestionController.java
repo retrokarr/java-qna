@@ -1,7 +1,6 @@
 package codesquad.web;
 
 import codesquad.CannotDeleteException;
-import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDto;
@@ -27,7 +26,7 @@ public class ApiQuestionController {
         Question savedQuestion = qnaService.create(loginUser, question.toQuestion());
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("/api/questions/" + savedQuestion.getId()));
+        headers.setLocation(URI.create(savedQuestion.generateUrl()));
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
