@@ -13,6 +13,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static codesquad.domain.UserTest.JAVAJIGI;
 import static codesquad.domain.UserTest.SANJIGI;
 import static codesquad.service.QuestionServiceTest.newQuestion;
+import static java.util.Optional.ofNullable;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
@@ -45,7 +46,7 @@ public class AnswerServiceTest {
         Question question = newQuestion(OWNER);
         Answer answer = new Answer(OWNER, ANSWER_CONTENTS);
 
-        when(questionRepository.findByIdAndDeletedFalse(0)).thenReturn(question);
+        when(questionRepository.findOne(0)).thenReturn(ofNullable(question));
         when(answerRepository.save(answer)).thenReturn(answer);
         Answer createdAnswer = qnaService.addAnswer(OWNER, 0, ANSWER_CONTENTS);
 

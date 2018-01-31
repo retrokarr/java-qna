@@ -1,6 +1,7 @@
 package codesquad.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
@@ -39,12 +40,10 @@ public class QnaService {
     }
 
     public Question findById(long id) {
-        Question question = questionRepository.findByIdAndDeletedFalse(id);
+        Optional<Question> question = questionRepository.findOne(id);
 
-        if(question == null)
-            throw new EntityNotFoundException("Question not exists");
-
-        return question;
+        return question.filter(q -> !q.isDeleted())
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public Question update(User loginUser, long id, Question updatedQuestion) {
@@ -57,7 +56,7 @@ public class QnaService {
 
     @Transactional
     public void deleteQuestion(User loginUser, long questionId) throws CannotDeleteException {
-        Question question = questionRepository.findOne(questionId);
+        Question question = findById(questionId);
 
         question.delete(loginUser);
 
