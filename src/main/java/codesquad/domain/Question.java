@@ -88,9 +88,11 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.contents = updatedQuestion.contents;
     }
 
-    @Override
-    public String generateUrl() {
-        return String.format("/questions/%d", getId());
+    public void delete(User loginUser) throws CannotDeleteException {
+        if(!this.isOwner(loginUser))
+            throw new CannotDeleteException("Not owner");
+
+        this.deleted = true;
     }
 
     public QuestionDto toQuestionDto() {
@@ -98,14 +100,12 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     }
 
     @Override
-    public String toString() {
-        return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
+    public String generateUrl() {
+        return String.format("/questions/%d", getId());
     }
 
-    public void delete(User loginUser) throws CannotDeleteException {
-        if(!this.isOwner(loginUser))
-            throw new CannotDeleteException("Not owner");
-
-        this.deleted = true;
+    @Override
+    public String toString() {
+        return "Question [id=" + getId() + ", title=" + title + ", contents=" + contents + ", writer=" + writer + "]";
     }
 }
