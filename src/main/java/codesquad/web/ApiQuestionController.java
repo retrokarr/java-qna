@@ -1,5 +1,7 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
+import codesquad.UnAuthorizedException;
 import codesquad.domain.Question;
 import codesquad.domain.User;
 import codesquad.dto.QuestionDto;
@@ -37,9 +39,20 @@ public class ApiQuestionController {
     }
 
     @PutMapping("/{questionNo}")
-    public void update(@LoginUser User loginUser, @PathVariable long questionNo
+    public ResponseEntity<Void> update(@LoginUser User loginUser, @PathVariable long questionNo
             , @Valid @RequestBody QuestionDto updatedQuestion) {
-
         qnaService.update(loginUser, questionNo, updatedQuestion.toQuestion());
+
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{questionNo}")
+    public ResponseEntity<Void> delete(@LoginUser User loginUser, @PathVariable long questionNo) {
+        try {
+            qnaService.deleteQuestion(loginUser, questionNo);
+        } catch (CannotDeleteException e) {
+            return new ResponseEntity<Void>(HttpStatus.UNAUTHORIZED);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }

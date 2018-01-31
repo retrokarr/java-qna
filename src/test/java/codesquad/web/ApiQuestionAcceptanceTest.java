@@ -1,15 +1,19 @@
 package codesquad.web;
 
 import codesquad.dto.QuestionDto;
+import com.sun.deploy.net.HttpResponse;
 import org.junit.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cache.support.NullValue;
+import org.springframework.http.*;
 import support.test.AcceptanceTest;
+
+import javax.xml.ws.Response;
 
 import static codesquad.domain.UserTest.newUser;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.IsNull.nullValue;
 
 
 public class ApiQuestionAcceptanceTest extends AcceptanceTest {
@@ -31,7 +35,11 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update() throws Exception {
-        basicAuthTemplate().put("/api/questions/1", UPDATED_QUESTION);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity<String> response = put("/api/questions/1", UPDATED_QUESTION);
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
         QuestionDto dbQuestion = template().getForObject("/api/questions/1", QuestionDto.class);
         assertThat(dbQuestion, is(UPDATED_QUESTION));
@@ -39,11 +47,18 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update_by_not_owner() throws Exception {
-        basicAuthTemplate(newUser("sanjigi")).put("/api/questions/1", UPDATED_QUESTION);
+        ResponseEntity<String> response = put("/api/questions/2", UPDATED_QUESTION);
+        assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
 
-        QuestionDto dbQuestion = template().getForObject("/api/questions/1", QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject("/api/questions/2", QuestionDto.class);
         assertThat(dbQuestion, not(UPDATED_QUESTION));
     }
 
-    public static QuestionDto
+    @Test
+    public void delete() throws Exception {
+        basicAuthTemplate().delete("/api/questions/1");
+
+        QuestionDto dbQuestion = template().getForObject("/api/questions/1", QuestionDto.class);
+        assertThat(dbQuestion, is(nullValue()));
+    }
 }

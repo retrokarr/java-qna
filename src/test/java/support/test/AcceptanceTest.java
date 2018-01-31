@@ -2,19 +2,15 @@ package support.test;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
-import org.springframework.util.MultiValueMap;
 
 import static testhelper.HtmlFormDataBuilder.urlEncodedForm;
 
@@ -47,9 +43,21 @@ public abstract class AcceptanceTest {
                 .exchange(url, HttpMethod.DELETE, urlEncodedForm().build(), String.class);
     }
 
-    public ResponseEntity<String> put(String url, HttpEntity<MultiValueMap<String, Object>> request) {
+    public ResponseEntity<String> put(String url, HttpEntity<?> request) {
         return basicAuthTemplate()
                 .exchange(url, HttpMethod.PUT, request, String.class);
+    }
+
+    public ResponseEntity<String> put(String url, Object object) {
+        return basicAuthTemplate()
+                .exchange(url, HttpMethod.PUT, toJson(object), String.class);
+    }
+
+    private static HttpEntity toJson(Object object) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        return new HttpEntity(object, headers);
     }
     
     protected User defaultUser() {

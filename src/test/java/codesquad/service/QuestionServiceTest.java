@@ -54,7 +54,7 @@ public class QuestionServiceTest {
         User origin = newUser("sanjigi");
         Question question = newQuestion(origin);
 
-        when(questionRepository.findOne(question.getId())).thenReturn(question);
+        when(questionRepository.findByIdAndDeletedFalse(question.getId())).thenReturn(question);
         Question foundQuestion = qnaService.findById(question.getId());
 
         assertThat(foundQuestion, is(question));
@@ -67,7 +67,7 @@ public class QuestionServiceTest {
         Question updatedQuestion = newQuestion(origin);
         updatedQuestion.update(origin, newQuestion("updated", "updated"));
 
-        when(questionRepository.findOne(question.getId())).thenReturn(question);
+        when(questionRepository.findByIdAndDeletedFalse(question.getId())).thenReturn(question);
         when(questionRepository.save(question)).thenReturn(updatedQuestion);
 
         assertThat(qnaService.update(origin, 0, updatedQuestion), is(updatedQuestion));
@@ -78,7 +78,7 @@ public class QuestionServiceTest {
         User origin = newUser("sanjigi");
         Question question = newQuestion(origin);
 
-        when(questionRepository.findOne(question.getId())).thenReturn(question);
+        when(questionRepository.findByIdAndDeletedFalse(question.getId())).thenReturn(question);
 
         qnaService.update(newUser("another"), 0, question);
     }

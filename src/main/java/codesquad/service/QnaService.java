@@ -3,8 +3,8 @@ package codesquad.service;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 
-import codesquad.UnAuthorizedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -38,11 +38,16 @@ public class QnaService {
     }
 
     public Question findById(long id) {
-        return questionRepository.findOne(id);
+        Question question = questionRepository.findByIdAndDeletedFalse(id);
+
+        if(question == null)
+            throw new EntityNotFoundException("Question not exists");
+
+        return question;
     }
 
     public Question update(User loginUser, long id, Question updatedQuestion) {
-        Question originalQuestion = questionRepository.findOne(id);
+        Question originalQuestion = findById(id);
 
         originalQuestion.update(loginUser, updatedQuestion);
 
