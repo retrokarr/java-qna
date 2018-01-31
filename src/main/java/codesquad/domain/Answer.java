@@ -73,10 +73,24 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
     }
 
     public void update(User loginUser, AnswerDto answerDto) {
-        if(!isOwner(loginUser))
-            throw new UnAuthorizedException("Not answer owner");
+        checkOwner(loginUser);
 
         this.contents = answerDto.getContents();
+    }
+
+    public void delete(User loginUser) {
+        checkOwner(loginUser);
+
+        this.deleted = true;
+    }
+
+    private void checkOwner(User loginUser) {
+        if(!isOwner(loginUser))
+            throw new UnAuthorizedException("Not answer owner");
+    }
+
+    public String generateApiUrl() {
+        return "/api" + generateUrl();
     }
 
     @Override

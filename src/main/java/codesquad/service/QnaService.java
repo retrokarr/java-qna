@@ -82,12 +82,15 @@ public class QnaService {
     }
 
     public Answer deleteAnswer(User loginUser, long id) {
-        // TODO 답변 삭제 기능 구현 
-        return null;
+        Answer answer = findAnswerById(id);
+
+        answer.delete(loginUser);
+
+        return answerRepository.save(answer);
     }
 
     public Answer findAnswerById(long answerNo) {
-        Answer answer = answerRepository.findOne(answerNo);
+        Answer answer = answerRepository.findByIdAndDeletedFalse(answerNo);
 
         if(answer == null)
             throw new EntityNotFoundException("Answer not exists");

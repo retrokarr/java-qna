@@ -1,8 +1,10 @@
 package codesquad.web;
 
+import codesquad.CannotDeleteException;
 import codesquad.domain.Answer;
 import codesquad.domain.User;
 import codesquad.dto.AnswerDto;
+import codesquad.helper.ApiResponse;
 import codesquad.security.LoginUser;
 import codesquad.service.QnaService;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.net.URI;
 
 @RestController
 @RequestMapping("/api/questions/{questionNo}/answers")
@@ -25,9 +26,7 @@ public class ApiAnswerController {
             , @Valid @RequestBody AnswerDto answerDto) {
         Answer savedAnswer = qnaService.addAnswer(loginUser, questionNo, answerDto.getContents());
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create(savedAnswer.generateUrl()));
-        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+        return ApiResponse.CREATED(savedAnswer.generateApiUrl());
     }
 
 /*    @GetMapping("")
@@ -48,6 +47,13 @@ public class ApiAnswerController {
             , @Valid @RequestBody AnswerDto answerDto) {
         qnaService.updateAnswer(loginUser, answerNo, answerDto);
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return ApiResponse.OK();
+    }
+
+    @DeleteMapping("/{answerNo}")
+    public ResponseEntity<Void> delete(@LoginUser User loginUser, @PathVariable long answerNo) {
+        qnaService.deleteAnswer(loginUser, answerNo);
+
+        return ApiResponse.OK();
     }
 }

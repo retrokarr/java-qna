@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static codesquad.domain.UserTest.newUser;
+import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class AnswerTest {
@@ -35,5 +36,16 @@ public class AnswerTest {
     @Test(expected = UnAuthorizedException.class)
     public void updateTest_with_other() {
         answer.update(temporal, UPDATED_ANSWER);
+    }
+
+    @Test
+    public void deleteTest() {
+        answer.delete(writer);
+        assertTrue(answer.isDeleted());
+    }
+
+    @Test(expected = UnAuthorizedException.class)
+    public void deleteTest_with_other() {
+        answer.delete(temporal);
     }
 }

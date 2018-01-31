@@ -99,9 +99,13 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return new QuestionDto(getId(), this.title, this.contents);
     }
 
+    public String generateApiUrl() {
+        return "/api" + generateUrl();
+    }
+
     @Override
     public String generateUrl() {
-        return String.format("/api/questions/%d", getId());
+        return String.format("/questions/%d", getId());
     }
 
     @Override
