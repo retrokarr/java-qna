@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import codesquad.domain.User;
 import codesquad.domain.UserRepository;
 
+import static testhelper.HtmlFormDataBuilder.toJson;
 import static testhelper.HtmlFormDataBuilder.urlEncodedForm;
 
 @RunWith(SpringRunner.class)
@@ -48,18 +49,11 @@ public abstract class AcceptanceTest {
                 .exchange(url, HttpMethod.PUT, request, String.class);
     }
 
-    public ResponseEntity<String> put(String url, Object object) {
+    public ResponseEntity<String> put(String url, Object bodyPayload) {
         return basicAuthTemplate()
-                .exchange(url, HttpMethod.PUT, toJson(object), String.class);
+                .exchange(url, HttpMethod.PUT, toJson(bodyPayload), String.class);
     }
 
-    private static HttpEntity toJson(Object object) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        return new HttpEntity(object, headers);
-    }
-    
     protected User defaultUser() {
         return findByUserId(DEFAULT_LOGIN_USER);
     }

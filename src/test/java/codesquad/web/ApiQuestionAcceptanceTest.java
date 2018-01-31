@@ -1,15 +1,11 @@
 package codesquad.web;
 
 import codesquad.dto.QuestionDto;
-import com.sun.deploy.net.HttpResponse;
 import org.junit.Test;
-import org.springframework.cache.support.NullValue;
 import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
-import javax.xml.ws.Response;
 
-import static codesquad.domain.UserTest.newUser;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNot.not;
