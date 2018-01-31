@@ -5,6 +5,7 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.persistence.EntityNotFoundException;
 
+import codesquad.dto.AnswerDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Pageable;
@@ -92,5 +93,12 @@ public class QnaService {
             throw new EntityNotFoundException("Answer not exists");
 
         return answer;
+    }
+
+    public Answer updateAnswer(User loginUser, long answerNo, AnswerDto answerDto) {
+        Answer answer = findAnswerById(answerNo);
+        answer.update(loginUser, answerDto);
+
+        return answerRepository.save(answer);
     }
 }

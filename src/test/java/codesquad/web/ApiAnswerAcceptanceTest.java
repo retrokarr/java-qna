@@ -2,6 +2,8 @@ package codesquad.web;
 
 import codesquad.dto.AnswerDto;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import support.test.AcceptanceTest;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -10,6 +12,7 @@ import static org.hamcrest.core.Is.is;
 public class ApiAnswerAcceptanceTest extends AcceptanceTest {
     private static final String URL_BASE = "/api/questions/1/answers";
     private static final AnswerDto NEW_ANSWER = new AnswerDto(3,"Test Answer");
+    private static final AnswerDto UPDATED_ANSWER = new AnswerDto("Test Answer");
 
     @Test
     public void create() throws Exception {
@@ -17,5 +20,20 @@ public class ApiAnswerAcceptanceTest extends AcceptanceTest {
 
         AnswerDto dbAnswer = template().getForObject(location, AnswerDto.class);
         assertThat(dbAnswer, is(NEW_ANSWER));
+    }
+
+    @Test
+    public void update() throws Exception {
+        ResponseEntity<String> response = put(URL_BASE + "/" + 1, UPDATED_ANSWER);
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+
+        AnswerDto dbAnswer = template().getForObject(URL_BASE + "/" + 1, AnswerDto.class);
+        assertThat(dbAnswer, is(UPDATED_ANSWER));
+    }
+
+    @Test
+    public void update_with_other() throws Exception {
+        ResponseEntity<String> response = put(URL_BASE + "/" + 2, UPDATED_ANSWER);
+        assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
     }
 }

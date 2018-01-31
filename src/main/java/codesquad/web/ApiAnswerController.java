@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.net.URI;
 
 @RestController
@@ -42,5 +41,13 @@ public class ApiAnswerController {
         Answer answer = qnaService.findAnswerById(answerNo);
 
         return answer.toAnswerDto();
+    }
+
+    @PutMapping("/{answerNo}")
+    public ResponseEntity<Void> update(@LoginUser User loginUser, @PathVariable long answerNo
+            , @Valid @RequestBody AnswerDto answerDto) {
+        qnaService.updateAnswer(loginUser, answerNo, answerDto);
+
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 }
