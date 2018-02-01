@@ -6,7 +6,7 @@ import org.springframework.http.*;
 import support.test.AcceptanceTest;
 
 
-import static codesquad.domain.UserTest.SANJIGI;
+import static codesquad.dto.QuestionDto.apiUrl;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.*;
 import static org.hamcrest.core.IsNot.not;
@@ -29,53 +29,50 @@ public class ApiQuestionAcceptanceTest extends AcceptanceTest {
 
     @Test
     public void update() throws Exception {
-        ResponseEntity<String> response = put(questionUrl(1L), UPDATED_QUESTION);
+        ResponseEntity<String> response = put(apiUrl(1L), UPDATED_QUESTION);
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
-        QuestionDto dbQuestion = template().getForObject(questionUrl(1L), QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject(apiUrl(1L), QuestionDto.class);
         assertThat(dbQuestion, is(UPDATED_QUESTION));
     }
 
     @Test
     public void update_by_not_owner() throws Exception {
-        ResponseEntity<String> response = put(questionUrl(2L), UPDATED_QUESTION);
+        ResponseEntity<String> response = put(apiUrl(2L), UPDATED_QUESTION);
         assertThat(response.getStatusCode(), is(HttpStatus.FORBIDDEN));
 
-        QuestionDto dbQuestion = template().getForObject(questionUrl(2L), QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject(apiUrl(2L), QuestionDto.class);
         assertThat(dbQuestion, not(UPDATED_QUESTION));
     }
 
     @Test
     public void delete() throws Exception {
-        ResponseEntity<String> response = delete(SANJIGI, questionUrl(2L));
+        ResponseEntity<String> response = delete(SANJIGI, apiUrl(2L));
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
-        QuestionDto dbQuestion = template().getForObject(questionUrl(2L), QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject(apiUrl(2L), QuestionDto.class);
         assertThat(dbQuestion, is(nullValue()));
     }
 
     @Test
     public void delete_not_exist_question() throws Exception {
-        ResponseEntity<String> response = delete(questionUrl(0L));
+        ResponseEntity<String> response = delete(apiUrl(0L));
         assertThat(response.getStatusCode(), is(HttpStatus.BAD_REQUEST));
     }
 
     @Test
     public void delete_owner_answer_also_owner() throws Exception {
-        ResponseEntity<String> response = delete(SANJIGI, questionUrl(3L));
+        ResponseEntity<String> response = delete(SANJIGI, apiUrl(3L));
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
-        QuestionDto dbQuestion = template().getForObject(questionUrl(3L), QuestionDto.class);
+        QuestionDto dbQuestion = template().getForObject(apiUrl(3L), QuestionDto.class);
         assertThat(dbQuestion, is(nullValue()));
     }
 
     @Test
     public void delete_owner_answer_not_owner() throws Exception {
-        ResponseEntity<String> response = delete(questionUrl(1L));
+        ResponseEntity<String> response = delete(apiUrl(1L));
         assertThat(response.getStatusCode(), is(HttpStatus.UNAUTHORIZED));
     }
 
-    private String questionUrl(long id) {
-        return URL_BASE + "/" + id;
-    }
 }
