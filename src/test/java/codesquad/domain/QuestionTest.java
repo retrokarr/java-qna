@@ -5,9 +5,12 @@ import codesquad.UnAuthorizedException;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+
 import static codesquad.domain.UserTest.newUser;
 import static junit.framework.TestCase.assertTrue;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.within;
 
 public class QuestionTest {
     private Question question;
@@ -42,9 +45,13 @@ public class QuestionTest {
 
     @Test
     public void deleteTest_with_answer() throws CannotDeleteException {
-        question.addAnswer(new Answer(writer, "1"));
-        question.delete(writer);
+        Answer answer = new Answer(writer, "1");
+        question.addAnswer(answer);
+        
+        List<DeleteHistory> histories = question.delete(writer);
+
         assertTrue(question.isDeleted());
+        assertThat(histories.get(0)).isEqualTo(answer.delete(writer));
     }
 
     @Test(expected = CannotDeleteException.class)
