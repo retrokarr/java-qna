@@ -22,6 +22,8 @@ import codesquad.dto.QuestionDto;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
+import static com.sun.xml.internal.ws.policy.sourcemodel.wspolicy.XmlToken.Optional;
+
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
     @Size(min = 3, max = 100)
@@ -92,7 +94,21 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         if(!this.isOwner(loginUser))
             throw new CannotDeleteException("Not owner");
 
+        if(!this.isAnswersDeletable())
+            throw new CannotDeleteException("Answers can't be deleted");
+
+        this.deleteAnswers();
+
         this.deleted = true;
+    }
+
+    private boolean isAnswersDeletable() {
+        return answers.stream()
+                .allMatch(a -> a.isDeletable(writer));
+    }
+
+    private void deleteAnswers() {
+        answers.forEach(a -> a.delete(writer));
     }
 
     public QuestionDto toQuestionDto() {

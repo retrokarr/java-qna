@@ -89,6 +89,10 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
             throw new UnAuthorizedException("Not answer owner");
     }
 
+    public boolean isDeletable(User writer) {
+        return isOwner(writer);
+    }
+
     public String generateApiUrl() {
         return "/api" + generateUrl();
     }
