@@ -40,8 +40,21 @@ public class QuestionTest {
         assertTrue(question.isDeleted());
     }
 
+    @Test
+    public void deleteTest_with_answer() throws CannotDeleteException {
+        question.addAnswer(new Answer(writer, "1"));
+        question.delete(writer);
+        assertTrue(question.isDeleted());
+    }
+
     @Test(expected = CannotDeleteException.class)
     public void deleteTest_with_other() throws CannotDeleteException {
         question.delete(temporal);
+    }
+
+    @Test(expected = CannotDeleteException.class)
+    public void deleteTest_with_answer_written_by_other() throws CannotDeleteException {
+        question.addAnswer(new Answer(temporal, "1"));
+        question.delete(writer);
     }
 }
