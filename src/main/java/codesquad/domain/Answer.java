@@ -12,6 +12,8 @@ import codesquad.dto.AnswerDto;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
+import static codesquad.domain.ContentType.ANSWER;
+
 @Entity
 public class Answer extends AbstractEntity implements UrlGeneratable {
     @ManyToOne
@@ -78,10 +80,16 @@ public class Answer extends AbstractEntity implements UrlGeneratable {
         this.contents = answerDto.getContents();
     }
 
-    public void delete(User loginUser) {
+    public DeleteHistory delete(User loginUser) {
         checkOwner(loginUser);
 
         this.deleted = true;
+
+        return this.deleteHistory();
+    }
+
+    private DeleteHistory deleteHistory() {
+        return new DeleteHistory(ANSWER, getId(), writer);
     }
 
     private void checkOwner(User loginUser) {

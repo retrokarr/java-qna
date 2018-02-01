@@ -2,6 +2,7 @@ package codesquad.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,10 +20,11 @@ import codesquad.UnAuthorizedException;
 import org.hibernate.annotations.Where;
 
 import codesquad.dto.QuestionDto;
+import org.hibernate.hql.spi.id.persistent.DeleteHandlerImpl;
 import support.domain.AbstractEntity;
 import support.domain.UrlGeneratable;
 
-import static com.sun.xml.internal.ws.policy.sourcemodel.wspolicy.XmlToken.Optional;
+import static codesquad.domain.ContentType.QUESTION;
 
 @Entity
 public class Question extends AbstractEntity implements UrlGeneratable {
@@ -90,16 +92,20 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         this.contents = updatedQuestion.contents;
     }
 
-    public void delete(User loginUser) throws CannotDeleteException {
+    public List<DeleteHistory> delete(User loginUser) throws CannotDeleteException {
         if(!this.isOwner(loginUser))
             throw new CannotDeleteException("Not owner");
 
-        if(!this.isAnswersDeletable())
-            throw new CannotDeleteException("Answers can't be deleted");
-
-        this.deleteAnswers();
-
         this.deleted = true;
+
+        List<DeleteHistory> histories = this.deleteAnswers();
+        histories.add(this.deleteHistory());
+
+        return histories;
+    }
+
+    private DeleteHistory deleteHistory() {
+        return new DeleteHistory(QUESTION, getId(), writer);
     }
 
     private boolean isAnswersDeletable() {
@@ -107,8 +113,13 @@ public class Question extends AbstractEntity implements UrlGeneratable {
                 .allMatch(a -> a.isDeletable(writer));
     }
 
-    private void deleteAnswers() {
-        answers.forEach(a -> a.delete(writer));
+    private List<DeleteHistory> deleteAnswers() throws CannotDeleteException {
+        if(!this.isAnswersDeletable())
+            throw new CannotDeleteException("Answers can't be deleted");
+
+        return answers.stream()
+                .map(a -> a.delete(writer))
+                .collect(Collectors.toList());
     }
 
     public QuestionDto toQuestionDto() {

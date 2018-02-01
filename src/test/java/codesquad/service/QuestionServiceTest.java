@@ -8,10 +8,7 @@ import static org.junit.Assert.*;
 
 import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
-import codesquad.domain.Answer;
-import codesquad.domain.Question;
-import codesquad.domain.QuestionRepository;
-import codesquad.domain.User;
+import codesquad.domain.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,6 +39,9 @@ public class QuestionServiceTest {
 
     @InjectMocks
     private QnaService qnaService;
+
+    @Mock
+    private DeleteHistoryService deleteHistoryService;
 
     @Before
     public void init() {
