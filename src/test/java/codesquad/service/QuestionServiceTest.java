@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 
 import codesquad.CannotDeleteException;
 import codesquad.UnAuthorizedException;
+import codesquad.domain.Answer;
 import codesquad.domain.Question;
 import codesquad.domain.QuestionRepository;
 import codesquad.domain.User;
@@ -91,5 +92,25 @@ public class QuestionServiceTest {
     @Test(expected = CannotDeleteException.class)
     public void deleteTest_by_other() throws Exception {
         qnaService.deleteQuestion(JAVAJIGI, QUESTION.getId());
+    }
+
+    @Test
+    public void deleteTest_with_answer() throws Exception {
+        QUESTION.addAnswer(new Answer(SANJIGI, "1"));
+        assertFalse(QUESTION.isDeleted());
+
+        qnaService.deleteQuestion(SANJIGI, QUESTION.getId());
+
+        assertTrue(QUESTION.isDeleted());
+    }
+
+    @Test(expected = CannotDeleteException.class)
+    public void deleteTest_with_answer_written_by_other() throws Exception {
+        QUESTION.addAnswer(new Answer(JAVAJIGI, "1"));
+        assertFalse(QUESTION.isDeleted());
+
+        qnaService.deleteQuestion(SANJIGI, QUESTION.getId());
+
+        assertFalse(QUESTION.isDeleted());
     }
 }
