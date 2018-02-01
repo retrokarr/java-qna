@@ -2,7 +2,6 @@ package codesquad.service;
 
 import static codesquad.domain.UserTest.JAVAJIGI;
 import static codesquad.domain.UserTest.SANJIGI;
-import static codesquad.domain.UserTest.newUser;
 import static java.util.Optional.ofNullable;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;

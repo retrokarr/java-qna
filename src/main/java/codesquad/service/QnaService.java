@@ -71,21 +71,23 @@ public class QnaService {
         return questionRepository.findAll(pageable).getContent();
     }
 
+    @Transactional
     public Answer addAnswer(User loginUser, long questionId, String contents) {
         Question question = findById(questionId);
         Answer answer = new Answer(loginUser, contents);
 
         question.addAnswer(answer);
 
-        return answerRepository.save(answer);
+        return answer;
     }
 
+    @Transactional
     public Answer deleteAnswer(User loginUser, long id) {
         Answer answer = findAnswerById(id);
 
         answer.delete(loginUser);
 
-        return answerRepository.save(answer);
+        return answer;
     }
 
     public Answer findAnswerById(long answerNo) {
