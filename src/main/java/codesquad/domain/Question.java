@@ -4,15 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
+import javax.persistence.*;
 import javax.validation.constraints.Size;
 
 import codesquad.CannotDeleteException;
@@ -40,10 +32,8 @@ public class Question extends AbstractEntity implements UrlGeneratable {
     @JoinColumn(foreignKey = @ForeignKey(name = "fk_question_writer"))
     private User writer;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
-    @Where(clause = "deleted = false")
-    @OrderBy("id ASC")
-    private List<Answer> answers = new ArrayList<>();
+    @Embedded
+    private Answers answers = new Answers();
 
     private boolean deleted = false;
 
@@ -98,7 +88,7 @@ public class Question extends AbstractEntity implements UrlGeneratable {
 
         this.deleted = true;
 
-        List<DeleteHistory> histories = this.deleteAnswers();
+        List<DeleteHistory> histories = answers.deleteAnswers(writer);
         histories.add(this.deleteHistory());
 
         return histories;
@@ -108,19 +98,6 @@ public class Question extends AbstractEntity implements UrlGeneratable {
         return new DeleteHistory(QUESTION, getId(), writer);
     }
 
-    private boolean isAnswersDeletable() {
-        return answers.stream()
-                .allMatch(a -> a.isDeletable(writer));
-    }
-
-    private List<DeleteHistory> deleteAnswers() throws CannotDeleteException {
-        if(!this.isAnswersDeletable())
-            throw new CannotDeleteException("Answers can't be deleted");
-
-        return answers.stream()
-                .map(a -> a.delete(writer))
-                .collect(Collectors.toList());
-    }
 
     public QuestionDto toQuestionDto() {
         return new QuestionDto(getId(), this.title, this.contents);
