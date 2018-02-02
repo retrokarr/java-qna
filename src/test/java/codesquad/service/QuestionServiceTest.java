@@ -16,7 +16,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QuestionServiceTest {
@@ -100,8 +103,9 @@ public class QuestionServiceTest {
         assertFalse(QUESTION.isDeleted());
 
         qnaService.deleteQuestion(SANJIGI, QUESTION.getId());
-
         assertTrue(QUESTION.isDeleted());
+
+        verify(deleteHistoryService, times(1)).saveAll(QUESTION.delete(SANJIGI));
     }
 
     @Test(expected = CannotDeleteException.class)
